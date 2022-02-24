@@ -27,17 +27,19 @@ resource "azuread_application_password" "frontend" {
 }
 
 resource "azurerm_app_service" "frontend" {
-  name                       = "app-terraform-frontend"
-  resource_group_name        = azurerm_resource_group.default.name
-  location                   = azurerm_resource_group.default.location
-  app_service_plan_id        = azurerm_app_service_plan.default.id
+  name                = "app-terraform-frontend"
+  resource_group_name = azurerm_resource_group.default.name
+  location            = azurerm_resource_group.default.location
+  app_service_plan_id = azurerm_app_service_plan.default.id
 
-  https_only             = true
+  https_only = true
 
   site_config {
     always_on                = true
     http2_enabled            = true
     dotnet_framework_version = "v6.0"
+
+    default_documents = ["hostingstart.html"]
   }
 
   auth_settings {
