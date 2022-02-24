@@ -12,7 +12,7 @@ resource "azuread_application" "frontend" {
   }
 
   web {
-    redirect_uris = ["https://func-terraform-frontend.azurewebsites.net/.auth/login/aad/callback"]
+    redirect_uris = ["https://app-terraform-frontend.azurewebsites.net/.auth/login/aad/callback"]
 
     implicit_grant {
       access_token_issuance_enabled = false
@@ -26,24 +26,12 @@ resource "azuread_application_password" "frontend" {
   end_date_relative     = "4320h"
 }
 
-resource "azurerm_storage_account" "frontend" {
-  name                     = "stterraformtestfrontend"
-  resource_group_name      = azurerm_resource_group.default.name
-  location                 = azurerm_resource_group.default.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-
-resource "azurerm_function_app" "frontend" {
-  name                       = "func-terraform-frontend"
+resource "azurerm_app_service" "frontend" {
+  name                       = "app-terraform-frontend"
   resource_group_name        = azurerm_resource_group.default.name
   location                   = azurerm_resource_group.default.location
   app_service_plan_id        = azurerm_app_service_plan.default.id
-  storage_account_name       = azurerm_storage_account.frontend.name
-  storage_account_access_key = azurerm_storage_account.frontend.primary_access_key
 
-  version                = "~4"
-  enable_builtin_logging = false
   https_only             = true
 
   site_config {
@@ -67,10 +55,5 @@ resource "azurerm_function_app" "frontend" {
       client_id     = azuread_application.frontend.application_id
       client_secret = azuread_application_password.frontend.value
     }
-  }
-
-  app_settings = {
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.default.instrumentation_key
-    "FUNCTIONS_WORKER_RUNTIME"       = "dotnet"
   }
 }
