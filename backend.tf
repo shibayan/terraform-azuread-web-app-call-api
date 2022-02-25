@@ -19,15 +19,6 @@ resource "azuread_application" "backend" {
       value                      = "user_impersonation"
     }
   }
-
-  web {
-    redirect_uris = ["https://func-terraform-backend.azurewebsites.net/.auth/login/aad/callback"]
-
-    implicit_grant {
-      access_token_issuance_enabled = false
-      id_token_issuance_enabled     = true
-    }
-  }
 }
 
 resource "azuread_service_principal" "backend" {
